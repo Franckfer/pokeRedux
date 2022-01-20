@@ -8,9 +8,10 @@ const dataInicial = {
     results: []
 }
 
-const OBTENER_POKEMONES = 'OBTENER_POKEMONES'
-const SIGUIENTES20_POKEMONES = 'SIGUIENTES20_POKEMONES'
-const ANTERIORES20_POKEMONES = 'ANTERIORES20_POKEMONES'
+const OBTENER_POKEMONES = 'OBTENER_POKEMONES';
+const SIGUIENTES20_POKEMONES = 'SIGUIENTES20_POKEMONES';
+const ANTERIORES20_POKEMONES = 'ANTERIORES20_POKEMONES';
+const DETALLE_POKEMONES = 'DETALLE_POKEMONES';
 
 
 // reducer
@@ -22,6 +23,8 @@ export default function pokeReducer(state = dataInicial, action) {
             return {...state, ...action.payload}
         case ANTERIORES20_POKEMONES:
             return {...state, ...action.payload}
+        case DETALLE_POKEMONES:
+            return {...state, detail: action.payload}
         default:
             return state;
     }
@@ -29,7 +32,7 @@ export default function pokeReducer(state = dataInicial, action) {
 
 
 // acciones
-export const obtenerPokemonesAccion = () => async (dispatch, getState) => {
+export const obtenerPokemonesAccion = () => async (dispatch) => {
 
     //obtenemos los pokemones que ya fueron guardados en localStorage
     if(localStorage.getItem('offset=0')) {
@@ -55,6 +58,27 @@ export const obtenerPokemonesAccion = () => async (dispatch, getState) => {
         
     }
 }
+
+export const pokeDetalle = (url = 'https://pokeapi.co/api/v2/pokemon/1/') => async (dispatch) => {
+
+    try {
+        const res = await axios.get(url)
+        dispatch({
+            type: DETALLE_POKEMONES,
+            payload: {
+                id: res.data.id,
+                name: res.data.name,
+                weight: res.data.weight,
+                height: res.data.height,
+                img: res.data.sprites.other.dream_world.front_default
+            }
+        })
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 
 
 //paginacion

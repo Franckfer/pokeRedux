@@ -1,5 +1,6 @@
 import {useDispatch, useSelector} from 'react-redux'
-import {obtenerPokemonesAccion, siguientesPokemones, anterioresPokemones} from '../redux/pokeDucks';
+import {obtenerPokemonesAccion, siguientesPokemones, anterioresPokemones, pokeDetalle} from '../redux/pokeDucks';
+import Detalle from './Detalle';
 
 const Pokemones = () => {
     const dispatch = useDispatch()
@@ -9,31 +10,57 @@ const Pokemones = () => {
     // console.log(pokemones);
 
     return (
-        <div>
+        <div className='row'>
 
-            <h3>lista de pokemones</h3>
-            <br />
-            {
-                pokemones.length === 0 && (
-                    <button onClick= {() => dispatch(obtenerPokemonesAccion()) }>GET pokemones</button>
-                )
-            }
-            <ul>
-                {
-                    pokemones.map(pokemon => (
-                        <li key={pokemon.name}> {pokemon.name} </li>
-                        ))
+            <div className="col-md-6">
+
+                <h3 className='ml-3'>Lista de Pokemon</h3>
+                <br />
+
+                <div className="d-flex justify-content-between">
+                    {
+                        pokemones.length === 0 && (
+                            <button onClick= {() => dispatch(obtenerPokemonesAccion()) } className='btn btn-dark'>GET pokemones</button>
+                            )
                     }
-            </ul>
-            {
-                previous && 
-                <button onClick= {() => dispatch(anterioresPokemones()) }>Anteriores</button>
-            }
-            {
-                next && 
-                <button onClick= {() => dispatch(siguientesPokemones()) }>Siguientes</button>
-            }
-                     
+                </div>
+
+                <ul className='list-group mt-3'>
+                    {
+                        pokemones.map(pokemon => (
+                            <li 
+                                key={pokemon.name} 
+                                className='list-group-item text-uppercase'
+                            > 
+                                {pokemon.name} 
+                            <button 
+                                className="btn btn-dark btn-sm float-right"
+                                onClick={() => dispatch(pokeDetalle(pokemon.url))}
+                            >Info
+                            </button>
+                            </li>
+                            ))
+                        }
+                </ul>
+
+                <div className="d-flex justify-content-between">
+
+                    {
+                        previous && 
+                        <button onClick= {() => dispatch(anterioresPokemones()) } className='btn btn-dark mt-3'>Anteriores</button>
+                    }
+                    {
+                        next && 
+                        <button onClick= {() => dispatch(siguientesPokemones()) } className='btn btn-dark mt-3'>Siguientes</button>
+                    }
+                    
+                </div>
+
+            </div>    
+            <div className="col-md-6">
+                <h3>Detalle del Pokemon</h3>
+                <Detalle />
+            </div> 
 
         </div>
     )
