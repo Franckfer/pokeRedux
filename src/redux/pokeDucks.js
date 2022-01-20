@@ -2,21 +2,26 @@ import axios from 'axios'
 
 // constantes
 const dataInicial = {
-    array : [],
-    offset: 0
+    count: 0,
+    next: null,
+    previous: null,
+    results: []
 }
 
 const OBTENER_POKEMONES = 'OBTENER_POKEMONES'
 const SIGUIENTES20_POKEMONES = 'SIGUIENTES20_POKEMONES'
+const ANTERIORES20_POKEMONES = 'ANTERIORES20_POKEMONES'
 
 
 // reducer
 export default function pokeReducer(state = dataInicial, action) {
     switch (action.type) {
         case OBTENER_POKEMONES:
-            return {...state, array: action.payload}
+            return {...state, ...action.payload}
         case SIGUIENTES20_POKEMONES:
-            return {...state, array: action.payload.array, offset: action.payload.offset}
+            return {...state, ...action.payload}
+        case ANTERIORES20_POKEMONES:
+            return {...state, ...action.payload}
         default:
             return state;
     }
@@ -26,34 +31,86 @@ export default function pokeReducer(state = dataInicial, action) {
 // acciones
 export const obtenerPokemonesAccion = () => async (dispatch, getState) => {
 
-    const {offset} = getState().pokemones
-
-    try {
-        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=20`)
+    //obtenemos los pokemones que ya fueron guardados en localStorage
+    if(localStorage.getItem('offset=0')) {
         dispatch({
             type: OBTENER_POKEMONES,
-            payload: res.data.results
+            payload: JSON.parse(localStorage.getItem('offset=0'))
+            //parseamos el objeto que se encontraba en formato string
         })
+        return
+    }
+
+    try {
+        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?offset=$0&limit=20`)
+        dispatch({
+            type: OBTENER_POKEMONES,
+            payload: res.data
+        })
+
+        localStorage.setItem('offset=0', JSON.stringify(res.data))
+        //guardamos en localstorage el resultado de data para evitar el uso repetitivo de peticiones a la api
     } catch (error) {
         console.log(error);
         
     }
 }
 
+
 //paginacion
 export const siguientesPokemones = () => async(dispatch, getState) => {
 
-    const offset = getState().pokemones.offset
+    const {next} = getState().pokemones
+    //en next obtenemos la api siguiente a la anterior con 20 resultdos nuevos
 
-    try {
-        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?offset=${offset + 20}&limit=20`)
+    if(localStorage.getItem(next)) {
         dispatch({
             type: SIGUIENTES20_POKEMONES,
-            payload: {
-                array:  res.data.results,
-                offset: offset + 20
-            }
+            payload: JSON.parse(localStorage.getItem(next))
+            //parseamos el objeto que se encontraba en formato string
         })
+        return
+    }
+
+    try {
+        const res = await axios.get(next)
+        dispatch({
+            type: SIGUIENTES20_POKEMONES,
+            payload: res.data
+        })
+
+        localStorage.setItem(next, JSON.stringify(res.data))
+
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+
+export const anterioresPokemones = () => async(dispatch, getState) => {
+
+    const {previous} = getState().pokemones
+    //en prev obtenemos la api anterior con 20 resultdos nuevos
+
+    if(localStorage.getItem(previous)) {
+        dispatch({
+            type: ANTERIORES20_POKEMONES,
+            payload: JSON.parse(localStorage.getItem(previous))
+            //parseamos el objeto que se encontraba en formato string
+        })
+        return
+    }
+
+    try {
+        const res = await axios.get(previous)
+        dispatch({
+            type: ANTERIORES20_POKEMONES,
+            payload: res.data
+        })
+
+        localStorage.setItem(previous, JSON.stringify(res.data))
+
     } catch (error) {
         console.log(error);
     }
