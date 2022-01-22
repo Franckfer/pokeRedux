@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {useDispatch, useSelector} from 'react-redux'
 import {obtenerPokemonesAccion, siguientesPokemones, anterioresPokemones, pokeDetalle} from '../redux/pokeDucks';
 import Detalle from './Detalle';
@@ -9,12 +10,27 @@ const Pokemones = () => {
     const previous = useSelector(store => store.pokemones.previous)
     // console.log(pokemones);
 
+    useEffect(() => {
+
+        const fetchData = () => {
+            dispatch(obtenerPokemonesAccion())
+        }
+
+        fetchData()
+
+    }, [dispatch]);
+
     return (
         <div className='row'>
+   
+            <div className="col-md-6">
+                <h3 className='text-center mt-3'>Detalle del Pokemon</h3>
+                <Detalle />
+            </div> 
 
             <div className="col-md-6">
 
-                <h3 className='ml-3'>Lista de Pokemon</h3>
+                <h3 className='text-center mt-3'>Lista de Pokemon</h3>
                 <br />
 
                 <div className="d-flex justify-content-between">
@@ -56,10 +72,6 @@ const Pokemones = () => {
                     
                 </div>
 
-            </div>    
-            <div className="col-md-6">
-                <h3>Detalle del Pokemon</h3>
-                <Detalle />
             </div> 
 
         </div>

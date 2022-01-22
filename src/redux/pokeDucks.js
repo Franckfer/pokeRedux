@@ -45,7 +45,7 @@ export const obtenerPokemonesAccion = () => async (dispatch) => {
     }
 
     try {
-        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?offset=$0&limit=20`)
+        const res = await axios.get(`https://pokeapi.co/api/v2/pokemon?offset=$0&limit=10`)
         dispatch({
             type: OBTENER_POKEMONES,
             payload: res.data
@@ -61,6 +61,14 @@ export const obtenerPokemonesAccion = () => async (dispatch) => {
 
 export const pokeDetalle = (url = 'https://pokeapi.co/api/v2/pokemon/1/') => async (dispatch) => {
 
+    if(localStorage.getItem(url)){
+        dispatch({
+            type: DETALLE_POKEMONES,
+            payload: JSON.parse(localStorage.getItem(url))
+        })
+        return
+    }
+
     try {
         const res = await axios.get(url)
         dispatch({
@@ -73,6 +81,14 @@ export const pokeDetalle = (url = 'https://pokeapi.co/api/v2/pokemon/1/') => asy
                 img: res.data.sprites.other.dream_world.front_default
             }
         })
+
+        localStorage.setItem(url, JSON.stringify({
+            id: res.data.id,
+            name: res.data.name,
+            weight: res.data.weight,
+            height: res.data.height,
+            img: res.data.sprites.other.dream_world.front_default
+        }))
 
     } catch (error) {
         console.log(error);
