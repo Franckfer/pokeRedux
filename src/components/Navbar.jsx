@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link, NavLink} from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { userLogoutAction } from '../redux/userDucks';
 
 const Navbar = () => {
@@ -13,19 +13,28 @@ const Navbar = () => {
         navigate('/login')
     }
 
+    const active = useSelector(store => store.users.active)
+
     return (
         <div className='navbar navbar-dark bg-dark'>
             <Link className='navbar-brand' to='/'>Pokemon</Link>
             <div className="d-flex">
-                <NavLink className='btn btn-dark mr-2' to='/'>Inicio</NavLink>
-                <NavLink className='btn btn-dark mr-2' to='/login'>Login</NavLink>
-                <button 
-                    className='btn btn-dark mr-2' 
-                    to='/logout'
-                    onClick={() => signOff()}
-                >
-                    Cerrar Sesion
-                </button>
+                {
+                    active ? (
+                        <>
+                            <NavLink className='btn btn-dark mr-2' to='/'>Inicio</NavLink>
+                            <button 
+                                className='btn btn-dark mr-2' 
+                                to='/logout'
+                                onClick={() => signOff()}
+                            >
+                                Cerrar Sesion
+                            </button>
+                        </>
+                    ) : (
+                        <NavLink className='btn btn-dark mr-2' to='/login'>Login</NavLink>
+                    )
+                }
             </div>
         </div>
     )

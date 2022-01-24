@@ -1,5 +1,3 @@
-import { async } from '@firebase/util'
-import axios from 'axios'
 import { auth, app, provider, googlePopup } from '../firebase'
 //data inicial
 const dataInicial = {
